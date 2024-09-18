@@ -20,7 +20,8 @@
           <zeebe:input source="=total" target="total" />
           <zeebe:input source="=paymentMethod" target="paymentMethod" />
           <zeebe:input source="=orderId" target="orderId" />
-          <zeebe:output source="=paymentId" target="paymentId" />
+          <zeebe:output source="=processId" target="processId" />
+          <zeebe:output source="=paymentStatus" target="paymentStatus" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_082mn8t</bpmn:incoming>
