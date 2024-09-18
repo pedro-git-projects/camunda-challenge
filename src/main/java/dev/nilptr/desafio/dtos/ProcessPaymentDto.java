@@ -15,10 +15,11 @@ import java.util.Map;
 public class ProcessPaymentDto {
     private String processId;
     private PaymentStatus paymentStatus;
+    private String productId;
+/*    private int amount;
+    private String customerEmail;*/
 
     public Map<String, Object> toVariableMap() {
-        log.info("ProcessId " + processId);
-        log.info("PaymentStatu name" + paymentStatus.name());
         return Map.of("processId", processId, "paymentStatus", paymentStatus.name());
     }
 }

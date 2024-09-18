@@ -11,7 +11,10 @@ import java.math.BigInteger;
 @Setter
 @ToString
 public class PlaceOrderDto {
+/*    private String customerEmail;*/
     private String orderId;
     private PaymentMethod paymentMethod;
     private BigInteger total;
+/*    private String productID;
+    private int amount;*/
 }

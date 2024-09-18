@@ -94,11 +94,9 @@
     <bpmn:boundaryEvent id="Event_0afv961" attachedToRef="process_payment">
       <bpmn:compensateEventDefinition id="CompensateEventDefinition_0g6u64l" />
     </bpmn:boundaryEvent>
-    <bpmn:task id="cancel_payment" name="Cancel payment" isForCompensation="true" />
     <bpmn:boundaryEvent id="Event_1jgeqal" attachedToRef="update_inventory">
       <bpmn:compensateEventDefinition id="CompensateEventDefinition_164gr4m" />
     </bpmn:boundaryEvent>
-    <bpmn:task id="rollback_inventory_update" name="Rollback inventory update" isForCompensation="true" />
     <bpmn:intermediateThrowEvent id="order_cancelled" name="Order canelled">
       <bpmn:incoming>Flow_0an1un9</bpmn:incoming>
       <bpmn:compensateEventDefinition id="CompensateEventDefinition_1njrfg5" />
@@ -109,6 +107,22 @@
       <bpmn:outgoing>Flow_0c8vc06</bpmn:outgoing>
     </bpmn:receiveTask>
     <bpmn:sequenceFlow id="Flow_0c8vc06" sourceRef="Activity_1ybbxvl" targetRef="Gateway_0qbpcr9" />
+    <bpmn:serviceTask id="cancel_payment" name="Cancel payment" isForCompensation="true">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="cancelPayment" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=processId" target="processId" />
+          <zeebe:input source="=orderId" target="orderId" />
+          <zeebe:output source="=cancelMessage" target="cancelMessage" />
+          <zeebe:output source="=cancelled" target="cancelled" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="rollback_inventory_update" name="Rollback inventory update" isForCompensation="true">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="rollbackUpdate" />
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
     <bpmn:association id="Association_0kewe1r" associationDirection="One" sourceRef="Event_0afv961" targetRef="cancel_payment" />
     <bpmn:association id="Association_1g7tlr7" associationDirection="One" sourceRef="Event_1jgeqal" targetRef="rollback_inventory_update" />
   </bpmn:process>
@@ -162,14 +176,6 @@
           <dc:Bounds x="1342" y="202" width="76" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_15dun5o_di" bpmnElement="cancel_payment">
-        <dc:Bounds x="180" y="270" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0ve83h7_di" bpmnElement="rollback_inventory_update">
-        <dc:Bounds x="690" y="270" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1kms9vv_di" bpmnElement="order_cancelled">
         <dc:Bounds x="1362" y="265" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -178,6 +184,12 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_172u745_di" bpmnElement="Activity_1ybbxvl">
         <dc:Bounds x="910" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_057ac0h_di" bpmnElement="cancel_payment">
+        <dc:Bounds x="180" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_11abmle_di" bpmnElement="rollback_inventory_update">
+        <dc:Bounds x="690" y="270" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_16un7en_di" bpmnElement="Event_1jgeqal">
         <dc:Bounds x="602" y="199" width="36" height="36" />
