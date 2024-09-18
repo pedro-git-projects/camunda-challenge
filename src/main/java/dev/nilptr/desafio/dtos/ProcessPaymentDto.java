@@ -16,7 +16,7 @@ public class ProcessPaymentDto {
     private String processId;
     private PaymentStatus paymentStatus;
 
-    public Map<String, String> toVariableMap() {
+    public Map<String, Object> toVariableMap() {
         log.info("ProcessId " + processId);
         log.info("PaymentStatu name" + paymentStatus.name());
         return Map.of("processId", processId, "paymentStatus", paymentStatus.name());

@@ -19,14 +19,36 @@ public class ProcessPaymentWorker {
 
     @JobWorker(type = "processPayment", autoComplete = false)
     public void handleProcessPayment(JobClient client, ActivatedJob job, @VariablesAsType PlaceOrderDto placeOrderDto) {
-        log.info("Received variables " + placeOrderDto.toString());
-        processPaymentService.processPayment(placeOrderDto).flatMap(
-                dto -> Mono.fromCompletionStage(client.newCompleteCommand(job.getKey()).variables(dto.toVariableMap()).send())).doOnError(throwable -> {
-            log.error("Failed to complete job: " + throwable.getMessage());
-            client.newFailCommand(job.getKey()).retries(job.getRetries() - 1).errorMessage(throwable.getMessage()).send().exceptionally(failThrowable -> {
-                log.error("Failed to fail job: " + failThrowable.getMessage());
-                return null;
-            });
-        }).subscribe();
+        log.info("Received variables: " + placeOrderDto.toString());
+
+        processPaymentService.processPayment(placeOrderDto)
+                .doOnSubscribe(sub -> log.info("Starting payment processing for order: " + placeOrderDto.getOrderId()))
+                .flatMap(dto -> {
+                    log.info("Payment processed successfully, attempting to complete the job for order: " + placeOrderDto.getOrderId());
+                    // Log DTO content before sending the completion command
+                    log.info("Sending completion command with variables: " + dto.toVariableMap());
+                    return Mono.fromCompletionStage(
+                            client.newCompleteCommand(job.getKey())
+                                    .variables(dto.toVariableMap())
+                                    .send()
+                    );
+                })
+                .doOnSuccess(success -> log.info("Successfully completed job for order: " + placeOrderDto.getOrderId()))
+                .doOnError(throwable -> {
+                    log.error("Failed to complete job: " + throwable.getMessage());
+                    // Log retry and failure handling explicitly
+                    client.newFailCommand(job.getKey())
+                            .retries(job.getRetries() - 1)
+                            .errorMessage(throwable.getMessage())
+                            .send()
+                            .exceptionally(failThrowable -> {
+                                log.error("Failed to fail job: " + failThrowable.getMessage());
+                                return null;
+                            });
+                })
+                .subscribe(
+                        success -> log.info("Subscription success for order: " + placeOrderDto.getOrderId()),
+                        error -> log.error("Subscription error: " + error.getMessage())
+                );
     }
 }

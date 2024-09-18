@@ -15,7 +15,7 @@ import java.math.BigInteger;
 @Service
 public class ProcessPaymentService {
     public Mono<ProcessPaymentDto> processPayment(PlaceOrderDto placeorderDto) {
-        return Mono.fromRunnable(() -> {
+        return Mono.create(sink -> {
             var dto = new ProcessPaymentDto();
             log.info("Processing payment with data " + placeorderDto.toString());
             if (placeorderDto.getTotal().mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
@@ -27,6 +27,7 @@ public class ProcessPaymentService {
                 dto.setPaymentStatus(PaymentStatus.REFUSED);
                 log.info("Output data set to " + dto);
             }
+            sink.success(dto);
         });
     }
 }
