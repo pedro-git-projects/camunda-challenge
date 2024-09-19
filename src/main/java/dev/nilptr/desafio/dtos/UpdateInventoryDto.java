@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigInteger;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -21,12 +22,16 @@ public class UpdateInventoryDto {
     private String orderId;
     private OrderStatus orderStatus;
 
-    public UpdateInventoryDto(ProcessPaymentDto dto) {
+    public UpdateInventoryDto(ConfirmStockDto dto) {
         this.productId = dto.getProductId();
         this.amount = dto.getAmount();
         this.customerEmail = dto.getCustomerEmail();
         this.paymentStatus = dto.getPaymentStatus();
         this.orderId = dto.getOrderId();
+    }
+
+    public Map<String, Object> toVariableMap() {
+        return Map.of("productId", productId, "amount", amount, "customerEmail", customerEmail, "paymentStatus", paymentStatus, "orderId", orderId, "orderStatus", orderStatus);
     }
 
 }

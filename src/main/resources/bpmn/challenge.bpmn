@@ -91,6 +91,7 @@
           <zeebe:input source="=orderStatus" target="orderStatus" />
           <zeebe:input source="=productId" target="productId" />
           <zeebe:output source="=accepted" target="accepted" />
+          <zeebe:output source="=orderStatus" target="orderStatus" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0dinmu3</bpmn:incoming>
@@ -105,6 +106,11 @@
       <bpmn:extensionElements>
         <zeebe:ioMapping>
           <zeebe:output source="=inStock" target="inStock" />
+          <zeebe:output source="=processId" target="processId" />
+          <zeebe:output source="=paymentStatus" target="paymentStatus" />
+          <zeebe:output source="=amount" target="amount" />
+          <zeebe:output source="=customerEmail" target="customerEmail" />
+          <zeebe:output source="=orderId" target="orderId" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1rs5uhp</bpmn:incoming>
@@ -114,16 +120,16 @@
       <bpmn:compensateEventDefinition id="CompensateEventDefinition_0fxysgx" />
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="Flow_0dinmu3" sourceRef="update_inventory" targetRef="send_order_confirmation" />
-    <bpmn:exclusiveGateway id="product_in_stock_gateway" name="Product in stock:">
+    <bpmn:exclusiveGateway id="product_in_stock_gateway" name="Product in stock?">
       <bpmn:incoming>Flow_1wiwwvv</bpmn:incoming>
       <bpmn:outgoing>Flow_1gady68</bpmn:outgoing>
       <bpmn:outgoing>Flow_1lho2j7</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1wiwwvv" sourceRef="confirm_stock" targetRef="product_in_stock_gateway" />
-    <bpmn:sequenceFlow id="Flow_1gady68" name="Yes" sourceRef="product_in_stock_gateway" targetRef="update_inventory">
+    <bpmn:sequenceFlow id="Flow_1gady68" name="In stock" sourceRef="product_in_stock_gateway" targetRef="update_inventory">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= inStock = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1lho2j7" name="No" sourceRef="product_in_stock_gateway" targetRef="out_of_stock_compensation">
+    <bpmn:sequenceFlow id="Flow_1lho2j7" name="Out of stock" sourceRef="product_in_stock_gateway" targetRef="out_of_stock_compensation">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=inStock = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:intermediateThrowEvent id="out_of_stock_compensation">
@@ -137,14 +143,14 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1bn15kd" sourceRef="send_order_confirmation" targetRef="order_accepted_gateway" />
     <bpmn:sequenceFlow id="Flow_1ry57tk" name="Accepted" sourceRef="order_accepted_gateway" targetRef="complete_order">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=accepted = true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=accepted = true and not(orderStatus = "CANCELLED")</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:endEvent id="order_completed_successfully_end" name="Order completed successfully">
       <bpmn:incoming>Flow_1riubz0</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1riubz0" sourceRef="complete_order" targetRef="order_completed_successfully_end" />
     <bpmn:sequenceFlow id="Flow_0simo6a" name="Cancelled" sourceRef="order_accepted_gateway" targetRef="Event_165h8l1">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=accepted = false</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=accepted = false or orderStatus = "CANCELLED"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:intermediateThrowEvent id="Event_165h8l1">
       <bpmn:incoming>Flow_0simo6a</bpmn:incoming>
@@ -210,7 +216,7 @@
       <bpmndi:BPMNShape id="Gateway_05h7voy_di" bpmnElement="product_in_stock_gateway" isMarkerVisible="true">
         <dc:Bounds x="745" y="122" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="729" y="92" width="82" height="14" />
+          <dc:Bounds x="728" y="92" width="85" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_14ybo2w_di" bpmnElement="out_of_stock_compensation">
@@ -278,7 +284,7 @@
         <di:waypoint x="795" y="147" />
         <di:waypoint x="890" y="147" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="834" y="129" width="18" height="14" />
+          <dc:Bounds x="824" y="129" width="39" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_1ov7x1e" bpmnElement="Flow_0dinmu3">
@@ -298,7 +304,7 @@
         <di:waypoint x="770" y="257" />
         <di:waypoint x="892" y="257" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="778" y="212" width="15" height="14" />
+          <dc:Bounds x="800" y="243" width="60" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ry57tk_di" bpmnElement="Flow_1ry57tk">
