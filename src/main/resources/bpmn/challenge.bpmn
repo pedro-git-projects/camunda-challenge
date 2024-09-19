@@ -92,6 +92,8 @@
           <zeebe:input source="=productId" target="productId" />
           <zeebe:output source="=accepted" target="accepted" />
           <zeebe:output source="=orderStatus" target="orderStatus" />
+          <zeebe:output source="=customerEmail" target="customerEmail" />
+          <zeebe:output source="=orderId" target="orderId" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0dinmu3</bpmn:incoming>
@@ -164,6 +166,11 @@
     <bpmn:serviceTask id="complete_order" name="Complete order">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="completeOrder" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=customerEmail" target="customerEmail" />
+          <zeebe:input source="=orderId" target="orderId" />
+          <zeebe:input source="=orderStatus" target="orderStatus" />
+        </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1ry57tk</bpmn:incoming>
       <bpmn:outgoing>Flow_1riubz0</bpmn:outgoing>
