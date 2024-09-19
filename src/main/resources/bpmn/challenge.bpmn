@@ -100,6 +100,11 @@
     <bpmn:serviceTask id="rollback_inventory_update" name="Rollback inventory update" isForCompensation="true">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="rollbackUpdate" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=productId" target="productId" />
+          <zeebe:input source="=amount" target="amount" />
+          <zeebe:output source="=rollbackMessage" target="rollbackMessage" />
+        </zeebe:ioMapping>
       </bpmn:extensionElements>
     </bpmn:serviceTask>
     <bpmn:receiveTask id="confirm_stock" name="Confirm stock" messageRef="Message_00l1vfv">
