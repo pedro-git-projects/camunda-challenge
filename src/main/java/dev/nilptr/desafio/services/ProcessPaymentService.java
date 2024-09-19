@@ -16,16 +16,16 @@ import java.math.BigInteger;
 public class ProcessPaymentService {
     public Mono<ProcessPaymentDto> processPayment(PlaceOrderDto placeorderDto) {
         return Mono.create(sink -> {
-            var dto = new ProcessPaymentDto();
-            log.info("Processing payment with data " + placeorderDto.toString());
+            var dto = new ProcessPaymentDto(placeorderDto);
+            log.info("Processing payment with data " + placeorderDto);
             if (placeorderDto.getTotal().mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
                 dto.setProcessId(placeorderDto.getOrderId());
                 dto.setPaymentStatus(PaymentStatus.APPROVED);
-                log.info("Output data set to " + dto);
+                log.info("PAYMENT STATUS " + dto.getPaymentStatus().name());
             } else {
                 dto.setProcessId(placeorderDto.getOrderId());
                 dto.setPaymentStatus(PaymentStatus.REFUSED);
-                log.info("Output data set to " + dto);
+               log.info("PAYMENT STATUS " + dto.getPaymentStatus().name());
             }
             sink.success(dto);
         });

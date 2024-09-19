@@ -19,15 +19,7 @@ public class PlaceOrderService {
     private final ZeebeClient zeebeClient;
 
     public Mono<PublishMessageResponse> placeOrder(PlaceOrderDto placeOrderDto) {
-        log.info("Called " + PlaceOrderService.class);
-
-        String orderId = placeOrderDto.getOrderId();
-        String paymentMethod = placeOrderDto.getPaymentMethod().name();
-        String total = placeOrderDto.getTotal().toString();
-
-        var variables = Map.of("orderId", orderId, "paymentMethod", paymentMethod, "total", total);
-
-        ZeebeFuture<PublishMessageResponse> future = zeebeClient.newPublishMessageCommand().messageName("orderPlaced").correlationKey(orderId).variables(variables).send();
+        ZeebeFuture<PublishMessageResponse> future = zeebeClient.newPublishMessageCommand().messageName("orderPlaced").correlationKey(placeOrderDto.getOrderId()).variables(placeOrderDto.toVariableMap()).send();
         return Mono.create(sink -> future.whenComplete((publishMessageResponse, throwable) -> {
             if (throwable != null) {
                 log.error("Failed with " + throwable);
