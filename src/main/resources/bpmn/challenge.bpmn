@@ -170,6 +170,7 @@
           <zeebe:input source="=customerEmail" target="customerEmail" />
           <zeebe:input source="=orderId" target="orderId" />
           <zeebe:input source="=orderStatus" target="orderStatus" />
+          <zeebe:output source="=completionMessage" target="completionMessage" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1ry57tk</bpmn:incoming>
